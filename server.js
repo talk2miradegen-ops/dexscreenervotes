@@ -53,13 +53,17 @@ app.get('/*', async (req, res) => {
                     ogTitle = title;
                     ogDesc = `🗳 Vote ${tokenSymbol} and earn ${chainSym} rewards from the community voting pool. Market Cap: ${mcapStr}`;
 
-                    if (pair.info && pair.info.imageUrl) {
-                        ogImage = pair.info.imageUrl;
-                        twImage = pair.info.imageUrl;
-                    } else {
-                        ogImage = `https://dd.dexscreener.com/ds-data/tokens/${chainId}/${ca}.png`;
-                        twImage = ogImage;
-                    }
+                    // Since the user requested the OG Image to be a full desktop view of the site instead of the token logo,
+                    // we dynamically use an automatic screenshot API (Thum.io) to take a live picture of the webpage.
+                    // We tell the API to wait 3 seconds to ensure the Dexscreener data has fully loaded before snapping!
+                    const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+                    const host = req.get('host');
+                    const siteUrl = `${protocol}://${host}/${ca}`;
+
+                    const screenshotUrl = `https://image.thum.io/get/width/1200/crop/630/wait/3/${siteUrl}`;
+
+                    ogImage = screenshotUrl;
+                    twImage = screenshotUrl;
                 }
             }
         } catch (e) {
