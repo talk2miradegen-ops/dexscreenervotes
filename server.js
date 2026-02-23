@@ -67,6 +67,15 @@ app.get('/*', async (req, res) => {
         }
     }
 
+    // Inject the exact CA we parsed on the backend straight into the JavaScript frontend
+    // This bypasses any window.location.pathname issues on Vercel/Render!
+    if (ca) {
+        let injectionRegex = /function getCAFromURL\(\)\{[\s\S]*?return null;\s*\}/;
+        let injectionCode = `function getCAFromURL() { return "${ca}"; }`;
+        html = html.replace(injectionRegex, injectionCode);
+    }
+
+
     // Replace the placeholders in HTML with the dynamic values
     html = html.replace(/<title>.*?<\/title>/g, `<title>${title}</title>`);
     html = html.replace(/<meta property="og:title".*?>/g, `<meta property="og:title" content="${ogTitle}" id="ogTitle">`);
