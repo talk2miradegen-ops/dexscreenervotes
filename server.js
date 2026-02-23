@@ -53,17 +53,18 @@ app.get('/*', async (req, res) => {
                     ogTitle = title;
                     ogDesc = `🗳 Vote ${tokenSymbol} and earn ${chainSym} rewards from the community voting pool. Market Cap: ${mcapStr}`;
 
-                    // Since Thum.io often returns a loading spinner or its own logo on the first fetch,
-                    // we use the token's native logo or DexScreener's default token image for immediate, reliable previews.
-                    let imgUrl = '';
-                    if (pair.info && pair.info.imageUrl) {
-                        imgUrl = pair.info.imageUrl;
-                    } else {
-                        imgUrl = `https://dd.dexscreener.com/ds-data/tokens/${chainId}/${ca}.png`;
-                    }
+                    // We use Thum.io to take a screenshot of the page so Telegram shows the actual webpage layout.
+                    // The 'noanimate' flag is crucial: it prevents Thum.io from sending its placeholder spinner.
+                    // If Thum.io is busy, it will return an error instead of the spinner, meaning Telegram won't
+                    // permanently cache the spinner. On retry (or via @WebpageBot), the correct image will appear.
+                    const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+                    const host = req.get('host');
+                    const siteUrl = `${protocol}://${host}/${ca}`;
 
-                    ogImage = imgUrl;
-                    twImage = imgUrl;
+                    const screenshotUrl = `https://image.thum.io/get/width/1200/crop/630/wait/3/noanimate/${siteUrl}`;
+
+                    ogImage = screenshotUrl;
+                    twImage = screenshotUrl;
                 }
             }
         } catch (e) {
