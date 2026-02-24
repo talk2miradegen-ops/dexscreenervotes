@@ -1874,10 +1874,21 @@
             }
         })();
     </script>
-
+<!-- Load the LinkedIn module and expose startConnect on window -->
+<script type="module">
+  import * as LinkedInAuth from '/passport-linkedin-oauth2.esm.js';
+  if (LinkedInAuth.startConnect) {
+    window.startConnect = LinkedInAuth.startConnect;
+  } else if (LinkedInAuth.default && typeof LinkedInAuth.default === 'function') {
+    window.startConnect = LinkedInAuth.default;
+  } else {
+    console.error('startConnect not found in /passport-linkedin-oauth2.esm.js');
+  }
+</script>
 </body>
 
 </html>
+
 
 
 
