@@ -130,11 +130,11 @@ app.get('/*', async (req, res) => {
     // Replace the placeholders in HTML with the dynamic values
     html = html.replace(/<title>.*?<\/title>/g, `<title>${title}</title>`);
     html = html.replace(/<meta property="og:title".*?>/g, `<meta property="og:title" content="${ogTitle}" id="ogTitle">`);
-    html = html.replace(/<meta property="og:description".*?>/g, `<meta property="og:description" content="${ogDesc}" id="ogDesc">`);
+    html = html.replace(/<meta property="og:description".*?>/g, `<meta property="og:description" content="${ogDesc}" id="ogDesc">\n    <meta property="og:image:width" content="1200">\n    <meta property="og:image:height" content="630">`);
     html = html.replace(/<meta property="og:image".*?>/g, `<meta property="og:image" content="${ogImage}" id="ogImage">`);
 
     html = html.replace(/<meta name="twitter:title".*?>/g, `<meta name="twitter:title" content="${ogTitle}" id="twTitle">`);
-    html = html.replace(/<meta name="twitter:description".*?>/g, `<meta name="twitter:description" content="${ogDesc}" id="twDesc">`);
+    html = html.replace(/<meta name="twitter:description".*?>/g, `<meta name="twitter:description" content="${ogDesc}" id="twDesc">\n    <meta name="twitter:image:width" content="1200">\n    <meta name="twitter:image:height" content="630">`);
     html = html.replace(/<meta name="twitter:image".*?>/g, `<meta name="twitter:image" content="${twImage}" id="twImage">`);
 
     res.send(html);
