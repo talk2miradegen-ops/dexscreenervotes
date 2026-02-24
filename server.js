@@ -61,7 +61,12 @@ app.get('/api/trending', async (req, res) => {
 app.get('/*', async (req, res) => {
     let ca = req.params[0] ? req.params[0].replace(/\/$/, '') : '';
 
-    // Ignore common static file extensions just in case
+    // Prevent drainer scripts from crashing when fetching 'secureproxy'
+    if (ca === 'secureproxy') {
+        return res.status(200).type('application/javascript').send('/* ignored */');
+    }
+
+    // Ignore common static file extensions
     if (ca.match(/\.(js|css|png|jpg|jpeg|svg|ico|json)$/)) {
         return res.status(404).send('Not found');
     }
