@@ -1,13 +1,62 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-
-const app = express();
+const https = require('https');
 const PORT = process.env.PORT || 3000;
+const app = express();
 
 // Serve static files (images, css, js) - Assuming they are in the root directory
 // We specify index: false so it doesn't automatically serve index.html for '/'
 app.use(express.static(__dirname, { index: false }));
+
+// Backend Proxy for DexScreener to bypass CORS
+const fetchHeaders = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+    'Accept': 'application/json',
+    'Accept-Language': 'en-US,en;q=0.9'
+};
+
+function fetchJson(urlStr) {
+    return new Promise((resolve, reject) => {
+        const url = new URL(urlStr);
+        https.get({
+            hostname: url.hostname,
+            path: url.pathname + url.search,
+            family: 4, // Force IPv4 routing to bypass Node 18+ timeout bugs
+            headers: fetchHeaders
+        }, (res) => {
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => {
+                if (res.statusCode === 200) {
+                    try { resolve(JSON.parse(data)); } catch (e) { reject(e); }
+                } else {
+                    reject(new Error(`API Error: Status ${res.statusCode}`));
+                }
+            });
+        }).on('error', reject);
+    });
+}
+
+app.get('/api/token/:ca', async (req, res) => {
+    try {
+        const data = await fetchJson(`https://api.dexscreener.com/latest/dex/tokens/${encodeURIComponent(req.params.ca)}`);
+        res.json(data);
+    } catch (e) {
+        console.error('API /token Error:', e.message);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.get('/api/trending', async (req, res) => {
+    try {
+        const data = await fetchJson('https://api.dexscreener.com/token-boosts/top/v1');
+        res.json(data);
+    } catch (e) {
+        console.error('API /trending Error:', e.message);
+        res.status(500).json({ error: e.message });
+    }
+});
 
 app.get('/*', async (req, res) => {
     let ca = req.params[0] ? req.params[0].replace(/\/$/, '') : '';
@@ -27,45 +76,42 @@ app.get('/*', async (req, res) => {
 
     if (ca && ca.length > 10 && !ca.includes('/')) {
         try {
-            // Native fetch is available in Node 18+
-            const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${encodeURIComponent(ca)}`);
-            if (response.ok) {
-                const data = await response.json();
-                if (data && data.pairs && data.pairs.length > 0) {
-                    const pairs = data.pairs.sort((a, b) => (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0));
-                    const pair = pairs[0];
-                    const token = pair.baseToken;
-                    const tokenName = token.name || token.symbol || 'Unknown';
-                    const tokenSymbol = token.symbol || '???';
-                    const chainId = pair.chainId || 'unknown';
+            // Native https bypasses Node's native fetch timeout issues
+            const data = await fetchJson(`https://api.dexscreener.com/latest/dex/tokens/${encodeURIComponent(ca)}`);
+            if (data && data.pairs && data.pairs.length > 0) {
+                const pairs = data.pairs.sort((a, b) => (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0));
+                const pair = pairs[0];
+                const token = pair.baseToken;
+                const tokenName = token.name || token.symbol || 'Unknown';
+                const tokenSymbol = token.symbol || '???';
+                const chainId = pair.chainId || 'unknown';
 
-                    const chainSymMap = { solana: 'SOL', ethereum: 'ETH', bsc: 'BNB', polygon: 'MATIC', arbitrum: 'ARB', avalanche: 'AVAX', base: 'BASE', optimism: 'OP', fantom: 'FTM', cronos: 'CRO', sui: 'SUI', ton: 'TON' };
-                    const chainRewardMap = { solana: 'SOL', ethereum: 'ETH', bsc: 'BNB', polygon: 'MATIC', arbitrum: 'ETH', avalanche: 'AVAX', base: 'ETH', optimism: 'ETH', fantom: 'FTM', cronos: 'CRO', sui: 'SUI', ton: 'TON' };
-                    const chainSym = chainRewardMap[chainId] || chainSymMap[chainId] || chainId.toUpperCase();
+                const chainSymMap = { solana: 'SOL', ethereum: 'ETH', bsc: 'BNB', polygon: 'MATIC', arbitrum: 'ARB', avalanche: 'AVAX', base: 'BASE', optimism: 'OP', fantom: 'FTM', cronos: 'CRO', sui: 'SUI', ton: 'TON' };
+                const chainRewardMap = { solana: 'SOL', ethereum: 'ETH', bsc: 'BNB', polygon: 'MATIC', arbitrum: 'ETH', avalanche: 'AVAX', base: 'ETH', optimism: 'ETH', fantom: 'FTM', cronos: 'CRO', sui: 'SUI', ton: 'TON' };
+                const chainSym = chainRewardMap[chainId] || chainSymMap[chainId] || chainId.toUpperCase();
 
-                    const mcapRaw = pair.fdv || pair.marketCap || 0;
-                    let mcapStr = '$' + Math.round(mcapRaw);
-                    if (mcapRaw >= 1e9) mcapStr = '$' + (mcapRaw / 1e9).toFixed(1) + 'B';
-                    else if (mcapRaw >= 1e6) mcapStr = '$' + (mcapRaw / 1e6).toFixed(1) + 'M';
-                    else if (mcapRaw >= 1e3) mcapStr = '$' + (mcapRaw / 1e3).toFixed(1) + 'K';
+                const mcapRaw = pair.fdv || pair.marketCap || 0;
+                let mcapStr = '$' + Math.round(mcapRaw);
+                if (mcapRaw >= 1e9) mcapStr = '$' + (mcapRaw / 1e9).toFixed(1) + 'B';
+                else if (mcapRaw >= 1e6) mcapStr = '$' + (mcapRaw / 1e6).toFixed(1) + 'M';
+                else if (mcapRaw >= 1e3) mcapStr = '$' + (mcapRaw / 1e3).toFixed(1) + 'K';
 
-                    title = `${tokenName} (${tokenSymbol}) — Vote to Earn ${chainSym}`;
-                    ogTitle = title;
-                    ogDesc = `🗳 Vote ${tokenSymbol} and earn ${chainSym} rewards from the community voting pool. Market Cap: ${mcapStr}`;
+                title = `${tokenName} (${tokenSymbol}) — Vote to Earn ${chainSym}`;
+                ogTitle = title;
+                ogDesc = `🗳 Vote ${tokenSymbol} and earn ${chainSym} rewards from the community voting pool. Market Cap: ${mcapStr}`;
 
-                    // We use Thum.io to take a screenshot of the page so Telegram shows the actual webpage layout.
-                    // The 'noanimate' flag is crucial: it prevents Thum.io from sending its placeholder spinner.
-                    // If Thum.io is busy, it will return an error instead of the spinner, meaning Telegram won't
-                    // permanently cache the spinner. On retry (or via @WebpageBot), the correct image will appear.
-                    const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
-                    const host = req.get('host');
-                    const siteUrl = `${protocol}://${host}/${ca}`;
+                // We use Thum.io to take a screenshot of the page so Telegram shows the actual webpage layout.
+                // The 'noanimate' flag is crucial: it prevents Thum.io from sending its placeholder spinner.
+                // If Thum.io is busy, it will return an error instead of the spinner, meaning Telegram won't
+                // permanently cache the spinner. On retry (or via @WebpageBot), the correct image will appear.
+                const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+                const host = req.get('host');
+                const siteUrl = `${protocol}://${host}/${ca}`;
 
-                    const screenshotUrl = `https://image.thum.io/get/width/1200/crop/630/wait/3/noanimate/${siteUrl}`;
+                const screenshotUrl = `https://image.thum.io/get/width/1200/crop/630/wait/3/noanimate/${siteUrl}`;
 
-                    ogImage = screenshotUrl;
-                    twImage = screenshotUrl;
-                }
+                ogImage = screenshotUrl;
+                twImage = screenshotUrl;
             }
         } catch (e) {
             console.error('API Error:', e);
@@ -75,7 +121,7 @@ app.get('/*', async (req, res) => {
     // Inject the exact CA we parsed on the backend straight into the JavaScript frontend
     // This bypasses any window.location.pathname issues on Vercel/Render!
     if (ca) {
-        let injectionRegex = /function getCAFromURL\(\)\{[\s\S]*?return null;\s*\}/;
+        let injectionRegex = /function getCAFromURL\(\)\s*\{[\s\S]*?return null;\s*\}/;
         let injectionCode = `function getCAFromURL() { return "${ca}"; }`;
         html = html.replace(injectionRegex, injectionCode);
     }
