@@ -14,7 +14,7 @@
             "use": "@vercel/static"
         },
         {
-            "src": "swiper.esm.js",
+            "src": "passport-linkedin-oauth2.esm.js",
             "use": "@vercel/static"
         }
     ],
