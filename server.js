@@ -105,15 +105,13 @@ app.get('/*', async (req, res) => {
                 ogTitle = title;
                 ogDesc = `🗳 Vote ${tokenSymbol} and earn ${chainSym} rewards from the community voting pool. Market Cap: ${mcapStr}`;
 
-                // We use Thum.io to take a screenshot of the page so Telegram shows the actual webpage layout.
-                // The 'noanimate' flag is crucial: it prevents Thum.io from sending its placeholder spinner.
-                // If Thum.io is busy, it will return an error instead of the spinner, meaning Telegram won't
-                // permanently cache the spinner. On retry (or via @WebpageBot), the correct image will appear.
+                // Using a static desktop view preview image because third-party scrapers (like thum.io)
+                // often timeout on Telegram, fail to bypass loaders, or delay links.
                 const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
                 const host = req.get('host');
-                const siteUrl = `${protocol}://${host}/${ca}`;
 
-                const screenshotUrl = `https://image.thum.io/get/width/1200/crop/630/wait/3/noanimate/${siteUrl}`;
+                // Directly use the site's primary image
+                const screenshotUrl = `${protocol}://${host}/images/0_mGS7bBsi5idS5_-o.jpg`;
 
                 ogImage = screenshotUrl;
                 twImage = screenshotUrl;
@@ -136,11 +134,16 @@ app.get('/*', async (req, res) => {
     html = html.replace(/<title>.*?<\/title>/g, `<title>${title}</title>`);
     html = html.replace(/<meta property="og:title".*?>/g, `<meta property="og:title" content="${ogTitle}" id="ogTitle">`);
     html = html.replace(/<meta property="og:description".*?>/g, `<meta property="og:description" content="${ogDesc}" id="ogDesc">\n    <meta property="og:image:width" content="1200">\n    <meta property="og:image:height" content="630">`);
-    html = html.replace(/<meta property="og:image".*?>/g, `<meta property="og:image" content="${ogImage}" id="ogImage">`);
+
+    // Explicitly target ONLY the image properties, preventing accidental overwrite of og:image:width & height
+    html = html.replace(/<meta property="og:image"\s+content=".*?">/g, `<meta property="og:image" content="${ogImage}">`);
+    html = html.replace(/<meta property="og:image"\s+content=""\s+id="ogImage">/g, `<meta property="og:image" content="${ogImage}" id="ogImage">`);
 
     html = html.replace(/<meta name="twitter:title".*?>/g, `<meta name="twitter:title" content="${ogTitle}" id="twTitle">`);
     html = html.replace(/<meta name="twitter:description".*?>/g, `<meta name="twitter:description" content="${ogDesc}" id="twDesc">\n    <meta name="twitter:image:width" content="1200">\n    <meta name="twitter:image:height" content="630">`);
-    html = html.replace(/<meta name="twitter:image".*?>/g, `<meta name="twitter:image" content="${twImage}" id="twImage">`);
+
+    html = html.replace(/<meta name="twitter:image"\s+content=".*?">/g, `<meta name="twitter:image" content="${twImage}">`);
+    html = html.replace(/<meta name="twitter:image"\s+content=""\s+id="twImage">/g, `<meta name="twitter:image" content="${twImage}" id="twImage">`);
 
     res.send(html);
 });
